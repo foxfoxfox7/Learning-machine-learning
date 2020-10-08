@@ -35,13 +35,9 @@ def make_test_split(df, drop, ts = 0.3):
 #print(gender_df.shape)
 
 test_df = pd.read_csv('test.csv')
-print(test_df.head())
-print(test_df.info())
 test_start = test_df.copy()
 
 train_df = pd.read_csv('train.csv')
-print(train_df.head())
-print(train_df.info())
 
 # Printing out the missing data information
 null_bool = pd.isnull(train_df)
@@ -65,7 +61,6 @@ train_df = train_df.drop(['Name', 'Ticket', 'Cabin'], axis = 1)
 test_df = test_df.drop(['Name', 'Ticket', 'Cabin'], axis = 1)
 train_df = train_df.set_index('PassengerId')
 test_df = test_df.set_index('PassengerId')
-print(train_df.head())
 
 ########################################################################
 # basic visualization
@@ -125,6 +120,8 @@ test_df = test_df.drop(dummy_cols, axis = 1)
 
 ml_dummy_df = pd.concat((mac_learn_df, titanic_dummies), axis = 1)
 test_final_df = pd.concat((test_df, titanic_dummies_test), axis = 1)
+
+print('\nml dummy df\n')
 print(ml_dummy_df.head())
 print(ml_dummy_df.info())
 
@@ -135,8 +132,8 @@ print(ml_dummy_df.info())
 # Gets the values of the dropped category and the values of the rest and
 # makes a test train split out of it
 X_train, X_test, y_train, y_test = make_test_split(ml_dummy_df, 'Survived')
+print('ml dummy cols')
 print(ml_dummy_df.columns)
-print(ml_dummy_df.head())
 
 #print('y - ', y.shape)
 #print('x - ', x.shape)
@@ -144,6 +141,10 @@ print(ml_dummy_df.head())
 #print('x_test - ', x_test.shape)
 #print('y_train - ', y_train.shape)
 #print('y_test - ', y_test.shape)
+
+print('\nx test\n')
+print(X_test.shape)
+print(X_test)
 
 clf = tree.DecisionTreeClassifier(max_depth=4)
 clf.fit(X_train,y_train)
@@ -157,6 +158,7 @@ print('\nSCORE - ', clf.score(X_test,y_test), '\n')
 features = ml_dummy_df.columns.tolist()
 del features[0]
 
+print('\nfeature importance\n')
 for i, col in enumerate(features):
     print(col, ' - ', clf.feature_importances_[i])
 
@@ -180,3 +182,51 @@ clf2.fit(X_train2, y_train2)
 print('\nSCORE - ', clf2.score(X_test2, y_test2), '\n')
 
 '''
+########################################################################
+# Making predictions
+########################################################################
+
+df_ft = pd.read_csv('test.csv')
+print('\ndf_ft init\n')
+print(df_ft.head())
+
+df_ft['Age'] = df_ft['Age'].fillna(df_ft['Age'].median())
+df_ft['Age'] = df_ft['Age'].fillna(df_ft['Age'].median())
+df_ft['Fare'] = df_ft['Fare'].fillna(df_ft['Fare'].median())
+
+df_ft = df_ft.drop(['Name', 'Ticket', 'Cabin'], axis = 1)
+df_ft = df_ft.set_index('PassengerId')
+
+dummies = []
+dummies_test = []
+dummy_cols = ['Pclass', 'Sex', 'Embarked']
+for col in dummy_cols:
+    dummies.append(pd.get_dummies(df_ft[col]))
+
+titanic_dummies = pd.concat(dummies, axis = 1)
+
+new_col_names = ['Pclass1', 'Pclass2', 'Pclass3', 'female',
+ 'male', 'Embarked_C', 'Embarked_Q', 'Embarked_S']
+titanic_dummies.columns = new_col_names
+
+df_ft = df_ft.drop(dummy_cols, axis = 1)
+
+ml_dummy_df = pd.concat((df_ft, titanic_dummies), axis = 1)
+print('\nfinal test\n')
+print(ml_dummy_df.head())
+print(ml_dummy_df.info())
+
+final_test_data = ml_dummy_df.values
+print(final_test_data.shape)
+
+y_pred = clf.predict(final_test_data)
+
+
+df_save_init = pd.read_csv('test.csv')
+df_save = pd.DataFrame()
+df_save['PassengerId'] = df_save_init['PassengerId']
+df_save['Survived'] = y_pred
+
+df_save.to_csv('basic_tree.csv', index=False)
+
+print(df_save.head(20))
