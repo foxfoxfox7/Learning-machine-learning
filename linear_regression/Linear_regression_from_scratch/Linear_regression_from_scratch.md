@@ -41,7 +41,8 @@ def pderiv_th1(X, y, alpha, th0, th1):
 ```
 
 The equation for the line of best fit (our model) is simply $$h_{\theta}(x) = \theta_{1}x + \theta_{0}$$
-We start with guesses for the $\theta$ parameters and calculate a random line. This obviously will not be a good fit to the data but we need to quantify this so we can improve upon it. To do this we use the cost function which evaluates the quality of the fit $$J(\theta) = \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x) - y)^{2}$$
+We start with guesses for the $\theta$ parameters and calculate a random line. This obviously will not be a good fit to the data but we need to quantify this so we can improve upon it. To do this we use the cost function which evaluates the quality of the fit 
+$$J(\theta) = \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x) - y)^{2}$$
 If the fit of the model is perfect, $h_{\theta}(x)$ will be the same as $y$ and so $J(\theta)$ (the cost) will be $0$. Any deviation from this perfect fit will increase the cost as the difference between the calculated and actual y value is squared. If we take the partial derivative of the cost function with respect to each parameter at a time.
 $$\frac{\partial J}{\partial \theta_{0}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}$$ 
 $$\frac{\partial J}{\partial \theta_{1}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}x$$
@@ -73,8 +74,8 @@ plt.show()
 print('initial cost - ', cost_func(X, y, th0, th1))
 ```
 
-    theta_0 -  77
-    theta_1 -  28
+    theta_0 -  84
+    theta_1 -  67
 
 
 
@@ -83,20 +84,21 @@ print('initial cost - ', cost_func(X, y, th0, th1))
     
 
 
-    initial cost -  120060.0
+    initial cost -  316912.0
 
 
 In order to improve on our line parameters, we can take the partial derivative of the cost function and use it to make a new guess for the parameters. 
 $$\theta_{0}' = \theta_{0} - \alpha \frac{\partial J}{\partial \theta_{0}}$$
 $$\theta_{1}' = \theta_{1} - \alpha \frac{\partial J}{\partial \theta_{1}}$$
-The optimization parameter $\alpha$ allows us to control the speed of descent. We then just plug our new values in and repeat the process of optimization untill a satisfactory point is reached. This could be when the partial derivative is 0, when the cost function cannot be reduced significantly further or due to time restraints. We pick the number of loops to get us to this end point.
+The optimization parameter $\alpha$ allows us to control the speed of descent. We then just plug our new values in and repeat the process of optimization untill a satisfactory point is reached. This could be when the partial derivative is 0, when the cost function cannot be reduced significantly further or due to time restraints. We pick the number of loops to get us to this end point. A negative slope of the cost function indicates that the parameter should be increased and vice versa. Therefore we minus the partial derivative from the old value of the parameter. 
 
 
 ```python
 # The parameters for our gradient descent (optimising our line of best fit)
 alpha = 0.1
-loops = 100
+loops = 1000
 
+# The containers for tracking the gradient descents
 cost_converge = []
 part_deriv_0 = []
 part_deriv_1 = []
@@ -117,7 +119,7 @@ print('theta0 - ', th0)
 print('theta1 - ', th1)
 print('final cost - ', cost_func(X, y, th0, th1))
 
-
+# Plotting the convergence curves
 plt.plot(cost_converge)
 plt.title('Convergence of the cost function to its minimum')
 plt.xlabel('Loop number')
@@ -135,9 +137,9 @@ plt.ylabel('Derivative wrt theta1')
 plt.show()
 ```
 
-    theta0 -  8.26154274181503
-    theta1 -  -4.059249959539122
-    final cost -  14.839960548066049
+    theta0 -  6.000000000002855
+    theta1 -  -3.000000000001337
+    final cost -  2.3642447291551866e-23
 
 
 
@@ -158,7 +160,7 @@ plt.show()
     
 
 
-A negative slope of the cost function indicates that the parameter should be increased and vice versa. Therefore we minus the partial derivative from the old value of the parameter. Our final cost is 0 as with this data set we can find a perfect set and the partial derivatives both converge to 0 so we know we have reached a minimum of the cost function.
+Our final cost is 0 as with this data set we can find a perfect set and the partial derivatives both converge to 0 so we know we have reached a minimum of the cost function.
 
 
 ```python
@@ -176,9 +178,9 @@ plt.show()
 
     Pearson R -  (1.0, 0.0)
     weight -  -3
-    calculated weight -  -4.059249959539122
+    calculated weight -  -3.000000000001337
     bias -  6
-    calculated bias -  8.26154274181503
+    calculated bias -  6.000000000002855
 
 
 
@@ -232,6 +234,10 @@ y_{i}
 $$
 The weights vector now includes the bias as a sort of dummy feature which always equals 1. If the bias 'feature' allways is 1, the corresponding weighting is added in every case and so works like a bias. In this way the bias can be optimised with the weights. The cost function is the same but now takes the weight vector as an argument in the calculated y-value.
 
+Our cost function stay more or less the same but now is a function of a vector of weights
+$$J(\theta_{0}, \theta_{1}, \theta_{2}, \cdots, \theta_{n}) = \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}) - y^{(i)})^{2}$$
+where n is the number of features (including the bias) and i is the number of instances.
+
 
 ```python
 # The number of features and instances for our dummy data
@@ -266,22 +272,22 @@ print(df_inputs.head())
 print(df_targets.head())
 ```
 
-    [8 3 3 6]
+    [8 7 6 1]
        bias  feat_0  feat_1  feat_2
-    0     1       7       2       3
-    1     1       6       3       4
-    2     1       6       2       7
-    3     1       3       4       1
-    4     1       3       1       1
+    0     1       8       8       4
+    1     1       2       1       3
+    2     1       8       4       8
+    3     1       2       1       2
+    4     1       4       3       5
        target
-    0      53
-    1      59
-    2      74
-    3      35
-    4      26
+    0     116
+    1      31
+    2      96
+    3      30
+    4      59
 
 
-Here we have created some targets from our input data, weights and bias so that we have something to aim towards in the model.
+Here we have created some targets from our random input data and our random weightsso that we have something to aim towards in the model.
 
 
 ```python
@@ -324,13 +330,14 @@ plt.plot(costs)
 plt.title('The cost converging to its minimum')
 plt.xlabel('Iteration number')
 plt.ylabel('Cost')
+plt.ylim(-500, 1e4)
 plt.show()
 ```
 
-    initial cost -  tensor(4038644.2500, grad_fn=<MulBackward0>)
+    initial cost -  tensor(6818856., grad_fn=<MulBackward0>)
     Improving parameters...
-    ...time taken is 1.7145130634307861 s to complete 10000 loops
-    final cost -  tensor(1.5943e-06, grad_fn=<MulBackward0>)
+    ...time taken is 1.6756951808929443 s to complete 10000 loops
+    final cost -  tensor(1.5244e-06, grad_fn=<MulBackward0>)
 
 
 
@@ -362,9 +369,9 @@ plt.show()
     
     RESULTS
     
-    Pearson R -  0.9999999999996432
-    weights -  [8 3 3 6]
-    calculated weights -  [[7.9998713 3.0000122 3.0000072 6.0000076]]
+    Pearson R -  0.9999999999996412
+    weights -  [8 7 6 1]
+    calculated weights -  [[7.9998846 7.000007  6.000006  1.0000111]]
 
 
 
@@ -377,7 +384,46 @@ When plotting the calculated values against the target ones, if they all match w
 
 ## Normal equation approach
 
-Yet to be completed
+The normal equations method gives us the ability solve for our weights vector analytically. If we take our input data (the values of our features) as X and the values of our target in vector form as y, we can write our normal equation as.
+$$\theta = (X^{T}X)^{-1}X^{T}y$$
+where $\theta$ is our vector of weights for each feature.
+
+
+
+```python
+X = df_inputs.values
+y = df_targets['target'].values
+print('First five rows of the input data')
+print(X[:5][:])
+print('\nFirst five target values')
+print(y[:5])
+
+def find_theta_norm_eq(XX, yy):
+    return np.dot(np.dot(np.linalg.inv(np.dot(np.transpose(XX), XX)), np.transpose(XX)), yy)
+
+norm_eq_theta = find_theta_norm_eq(X, y)
+
+print('\nOur calculated weights')
+print(norm_eq_theta)
+```
+
+    First five rows of the input data
+    [[1 8 8 4]
+     [1 2 1 3]
+     [1 8 4 8]
+     [1 2 1 2]
+     [1 4 3 5]]
+    
+    First five target values
+    [116  31  96  30  59]
+    
+    Our calculated weights
+    [8. 7. 6. 1.]
+
+
+This gives us our exact values for $\theta^{(n)}$ and so is often a much better than the gradient descent algorithm. It should be noted that when the number of features is very large (on the order of $10^{6}$), the cost of computing the inverse $n x n$ matrix is prohibitive and gradient descent will need to be used.
+
+In addition, it is possible to find non-invertible matrices. These will often happen because of linearly dependent features (such as height in m and height in feet). Or because the number of features exceeds the number of instances.
 
 
 ```python
