@@ -40,13 +40,13 @@ def pderiv_th1(X, y, alpha, th0, th1):
     return (1 / mm) * np.sum((linear_func(X, th0, th1) - y)*X)
 ```
 
-The equation for the line of best fit (our model) is simply $$h_{\theta}(x) = \theta_{1}x + \theta_{0}$$
+The equation for the line of best fit (our model) is simply <img src="https://render.githubusercontent.com/render/math?math=h_{\theta}(x) = \theta_{1}x + \theta_{0}">
 We start with guesses for the $\theta$ parameters and calculate a random line. This obviously will not be a good fit to the data but we need to quantify this so we can improve upon it. To do this we use the cost function which evaluates the quality of the fit 
-$$J(\theta) = \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x) - y)^{2}$$
-If the fit of the model is perfect, $h_{\theta}(x)$ will be the same as $y$ and so $J(\theta)$ (the cost) will be $0$. Any deviation from this perfect fit will increase the cost as the difference between the calculated and actual y value is squared. If we take the partial derivative of the cost function with respect to each parameter at a time.
-$$\frac{\partial J}{\partial \theta_{0}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}$$ 
-$$\frac{\partial J}{\partial \theta_{1}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}x$$
-We find the slope of the cost function for any set of values of the parameters. Our aim is to change the parameters to reduce this slope to 0 (the minima) and in so doing, minimize $J(\theta).
+<img src="https://render.githubusercontent.com/render/math?math=J(\theta) = \frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x) - y)^{2}">
+If the fit of the model is perfect, $h_{\theta}(x)$ will be the same as $y$ and so $J(\theta)$ (the cost) will be 0. Any deviation from this perfect fit will increase the cost as the difference between the calculated and actual y value is squared. If we take the partial derivative of the cost function with respect to each parameter at a time.
+<img src="https://render.githubusercontent.com/render/math?math=\frac{\partial J}{\partial \theta_{0}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}">
+<img src="https://render.githubusercontent.com/render/math?math=\frac{\partial J}{\partial \theta_{1}} = \frac{1}{m}\sum_{i=1}^{m}((\theta_{1}x + \theta_{0}) - y)^{2}x">
+We find the slope of the cost function for any set of values of the parameters. Our aim is to change the parameters to reduce this slope to 0 (the minima) and in so doing, minimize <img src="https://render.githubusercontent.com/render/math?math=J(\theta)">.
 
 
 ```python
