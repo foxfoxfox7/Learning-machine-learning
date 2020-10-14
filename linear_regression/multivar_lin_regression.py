@@ -41,10 +41,8 @@ def mv_linear_regression_alg(inputs, targets, loops, alpha, w_in=None, b_in=None
 
     if w_in is not None:
         w == w_in
-        print('input')
     if b_in is not None:
         b == b_in
-        print('input')
 
     print('initial cost - ', cost_func_mv(inputs, targets, w, b))
     print('Improving parameters...')
