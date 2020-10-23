@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import time
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -32,7 +34,7 @@ for nn in neighbourhoods:
 # NEED TO CHECK FOR STATISTICAL SIGNIFICANCE
 print(df['Neighbourhood'].value_counts())
 
-exit()
+
 
 #df.groupby(df["ScheduledDay"].dt.week)["ScheduledDay"].count().plot(kind="bar", color='b', alpha=0.3)
 #plt.show()
@@ -68,27 +70,20 @@ df.sort_values(by='ScheduledDay', inplace=True)
 
 df['book_count'] = df.groupby('PatientId').cumcount()
 
-df['miss_count'] = np.NaN
-'''
-final_index = df.index.tolist()[-1]
 
-for i in df['ScheduledDay'].iteritems():
-    print(f'{final_index} -- {i[0]}')
-
-    patient = df.loc[i[0], 'PatientId']
-
-    count = df.loc[
-        (df['AppointmentDay'] < i[1])
-        & (df['No-show'] == 'Yes')
-        & (df['PatientId'] == patient)].shape[0]
-
-    df.loc[i[0], 'miss_count']  = count
-
-    print(f'\n{count}\n')
-'''
+def count_missed_apts_before_now(row, df):
+    subdf = df.query("AppointmentDay<@row.ScheduledDay and\
+                     `No-show`=='Yes' and PatientId==@row.PatientId")
+    return len(subdf)
 
 
-print(df.head())
+t3 = time.time()
+df['miss_count'] = df.apply(count_missed_apts_before_now, axis=1, args = (df,))
+t4 = time.time()
+miss_count_t = t4-t3
+print(f'miss count column calculated in {miss_count_t}')
+
+print(df.tail(50))
 print(df.info())
 
 
