@@ -29,7 +29,8 @@ for nn in neighbourhoods:
     num_yes_neigh = (df[(df['Neighbourhood'] == nn) & (df['No-show'] == 'Yes')]).shape[0]
     print(nn, ' --- ', num_yes_neigh / num_in_neigh),
 
-# NEED TO CHECK FRO STATISTICAL SIGNIFICANCE
+# NEED TO CHECK FOR STATISTICAL SIGNIFICANCE
+print(df['Neighbourhood'].value_counts())
 
 exit()
 
@@ -69,23 +70,6 @@ df['book_count'] = df.groupby('PatientId').cumcount()
 
 df['miss_count'] = np.NaN
 '''
-for i in df['ScheduledDay'].iteritems():
-    df_temp = df.loc[(df['AppointmentDay'] < i[1]) & (df['No-show'] == 'Yes')]
-
-    print(df_temp.head())
-    print(i[0])
-
-    patient = df.loc[i[0], 'PatientId']
-    print(f'\n {patient}')
-    try:
-        count = (df_temp['PatientId'] == patient).sum()
-        df.loc[i[0], 'miss_count']  = count
-
-        print(f'\n{count}\n')
-    except:
-        pass
-
-
 final_index = df.index.tolist()[-1]
 
 for i in df['ScheduledDay'].iteritems():
@@ -107,45 +91,5 @@ for i in df['ScheduledDay'].iteritems():
 print(df.head())
 print(df.info())
 
-
-
-
-
-
-
-
-
-'''
-
-
-# Seeing how many times the patient has no-showed
-# Need to change it to before!
-patID_count = df['PatientId'].value_counts()
-patID_count_dict = patID_count.to_dict() #converts to dictionary
-df['app_count'] = df['PatientId'].map(patID_count_dict)
-
-
-
-# Seeing how many times the patient has no-showed AND recieved a text
-# Need to change it to before!
-patID_count_ns_sms = df[(df['No-show'] == 'Yes') & (df['SMS_received'] == 1)]['PatientId'].value_counts()
-patID_count_ns_sms_dict = patID_count_ns_sms.to_dict()
-df['ns_count_sms'] = df['PatientId'].map(patID_count_ns_sms_dict)
-
-df['Gender'].replace(('M', 'F'), (1, 0), inplace=True)
-#Converting No-show to ints so they can be minussed from other cols
-df['No-show'].replace(('Yes', 'No'), (1, 0), inplace=True)
-# Removing the values that account from that row
-df['ns_count'] = df['ns_count'] - df['No-show']
-df['ns_count_sms'] = df['ns_count_sms'] - (df['No-show'] * df['SMS_received'])
-
-df[['ns_count', 'ns_count_sms']] = df[['ns_count', 'ns_count_sms']].fillna(0)
-
-df["SchedDay"] = pd.to_datetime(df["ScheduledDay"]).dt.date
-df["SchedHour"] = pd.to_datetime(df["ScheduledDay"]).dt.hour
-df["AppDay"] = pd.to_datetime(df["AppointmentDay"]).dt.date
-
-df = df.drop(['ScheduledDay', 'AppointmentDay', 'AppointmentID'], axis = 1)
-'''
 
 
